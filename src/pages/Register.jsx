@@ -5,10 +5,13 @@ import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth, db, storage } from "../firebase"
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { doc, setDoc } from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
+
 
 
 const Register = () => {
     const [err, setErr] = useState(false)
+    const navigate=useNavigate()
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -16,6 +19,7 @@ const Register = () => {
         const email = e.target[1].value;
         const password = e.target[2].value;
         const file = e.target[3].files[0];
+
 
         // const auth = getAuth();
         try {      // const auth = getAuth();
@@ -39,39 +43,41 @@ const Register = () => {
                     // Handle successful uploads on complete
                     // For instance, get the download URL: https://firebasestorage.googleapis.com/...
                     getDownloadURL(storageRef).then(async (downloadURL) => {
-                        
-                        await updateProfile(res.user, {
+                        try {
+                          //Update profile
+                          await updateProfile(res.user, {
                             displayName,
                             photoURL: downloadURL,
                           });
+                          //create user on firestore
                           await setDoc(doc(db, "users", res.user.uid), {
                             uid: res.user.uid,
                             displayName,
                             email,
                             photoURL: downloadURL,
                           });
-                        await setDoc(doc(db, "userChats",(await res).user.uid),{})
-                        
+
+                          await setDoc(doc(db, "users", res.user.uid),{});
+                          navigate("/");
+
+
+              
+                          //create empty user chats on firestore
+                        //   await setDoc(doc(db, "userChats", res.user.uid), {});
+                        //   navigate("/");
+                        } catch (err) {
+                          console.log(err);
+                          setErr(true);
+                        //   setLoading(false);
+                        }
+                      });
                     });
-                }
-            );
-            
-        } catch (err) {
+                  }  catch (err) {
             setErr(true);
         }
 
 
-        //   .then((userCredential) => {
-        //     // Signed in 
-        //     const user = userCredential.user;
-        //     // console.log(user)
-        //     // ...
-        //   })
-        //   .catch((error) => {
-        //     const errorCode = error.code;
-        //     const errorMessage = error.message;
-        //     // .. 
-        //   });
+
 
     }
     return (
