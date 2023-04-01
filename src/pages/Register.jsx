@@ -28,58 +28,43 @@ const Register = () => {
 
             const storageRef = ref(storage, displayName);
 
-            const uploadTask = uploadBytesResumable(storageRef, file);
-
-            // Register three observers:
-            // 1. 'state_changed' observer, called any time the state changes
-            // 2. Error observer, called on failure
-            // 3. Completion observer, called on successful completion
-            uploadTask.on(
-                (error) => {
-                    setErr(true);
-                    // Handle unsuccessful uploads
-                },
-                () => {
-                    // Handle successful uploads on complete
-                    // For instance, get the download URL: https://firebasestorage.googleapis.com/...
-                    getDownloadURL(storageRef).then(async (downloadURL) => {
-                        try {
-                          //Update profile
-                          await updateProfile(res.user, {
-                            displayName,
-                            photoURL: downloadURL,
-                          });
-                          //create user on firestore
-                          await setDoc(doc(db, "users", res.user.uid), {
-                            uid: res.user.uid,
-                            displayName,
-                            email,
-                            photoURL: downloadURL,
-                          });
-
-                          await setDoc(doc(db, "users", res.user.uid),{});
-                          navigate("/");
+            const uploadTask = await uploadBytesResumable(storageRef, file);
+            
 
 
-              
-                          //create empty user chats on firestore
-                        //   await setDoc(doc(db, "userChats", res.user.uid), {});
-                        //   navigate("/");
-                        } catch (err) {
-                          console.log(err);
-                          setErr(true);
-                        //   setLoading(false);
-                        }
-                      });
-                    });
-                  }  catch (err) {
+
+
+            uploadTask.on( 
+            (error) => {
+              setErr(true);
+              // Handle unsuccessful uploads
+            }, 
+            () => {
+              // Handle successful uploads on complete
+              // For instance, get the download URL: https://firebasestorage.googleapis.com/...
+              getDownloadURL(uploadTask.snapshot.ref).then(async(downloadURL) => {
+                await updateProfile(res.user,{
+                  displayName,
+                  photoURL:downloadURL,
+                });
+                await setDoc(doc(db,"users",res.user.uid),{
+                  uid:res.user.uid,
+                  displayName,
+                  email,
+                  photoURL:downloadURL,
+                });
+              });
+            }
+          );
+            
+            }  catch (err) {
             setErr(true);
         }
 
 
 
 
-    }
+    };
     return (
         <div className="formContainer">
             <div className="formWrapper">
