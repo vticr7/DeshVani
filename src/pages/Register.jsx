@@ -6,6 +6,7 @@ import { auth, db, storage } from "../firebase"
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { doc, setDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 
 
@@ -32,7 +33,7 @@ const Register = () => {
     
           await uploadBytesResumable(storageRef, file).then(() => {
             getDownloadURL(storageRef).then(async (downloadURL) => {
-              try {
+              
                 //Update profile
                 await updateProfile(res.user, {
                   displayName,
@@ -49,11 +50,7 @@ const Register = () => {
                 //create empty user chats on firestore
                 await setDoc(doc(db, "userChats", res.user.uid), {});
                 navigate("/");
-              } catch (err) {
-                console.log(err);
-                setErr(true);
-                // setLoading(false);
-              }
+              
             });
           });
         } catch (err) {
@@ -78,7 +75,7 @@ const Register = () => {
                     <button>Sign Up</button>
                     {err && <span>Something is wrong</span>}
                 </form>
-                <p>Do have a Account? Login</p>
+                <p>Do have a Account? Login<Link to="/register">Register</Link></p>
             </div>
         </div>
     )

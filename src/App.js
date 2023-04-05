@@ -21,8 +21,7 @@ function App() {
       <Routes>
         <Route path="/">
           <Route
-            index
-            element={
+            index element={
               <ProtectedRoute>
                 <Home />
               </ProtectedRoute>
