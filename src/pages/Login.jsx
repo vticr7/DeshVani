@@ -1,5 +1,5 @@
 import React from "react";
-import Add from "../image/upload.png"
+import Add from "../img/upload.png"
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
@@ -39,7 +39,7 @@ const Login = () => {
                     <input type="email" placeholder="email"/>
                     <input type="password" placeholder="password"/>
                     <button>Sign in</button>
-                    {err && <span>Something is wrong</span>}
+                    {err && <span>Something is wrong Verify Email and Password</span>}
                 </form>
                 <p>Do not have a Account? <Link to="/register">Register</Link></p>
             </div>
